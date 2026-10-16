@@ -3,6 +3,7 @@ package com.scc;
 
 import com.scc.dao.Userdao;
 import com.scc.model.User;
+import com.scc.ui.Adminmenu;
 
 import java.util.Scanner;
 
@@ -24,6 +25,7 @@ public class Main {
 
         switch(choice){
             case "1":
+                handleLogin();
                 break;
 
             case "2":
@@ -60,13 +62,31 @@ public class Main {
 
 
                 break;
-
-
-
         }
 
+    }
+
+    private static void handleLogin(){
 
 
+        System.out.print("Enter username: ");
+        String username = sc.nextLine();
+        System.out.print("Enter Password: ");
+        String password = sc.nextLine();
+
+         User user = userdao.login(username,password);
+
+         if(user != null){
+             System.out.println("\n -> Welcome "+user.username()+" | ROLE: "+user.roles()+"");
+
+             switch (user.roles()){
+
+                 case "ADMIN" -> new Adminmenu(userdao, sc).display(user);
+                 default -> System.out.println("Account toles not found!");
+
+             }
+
+         }
 
     }
 

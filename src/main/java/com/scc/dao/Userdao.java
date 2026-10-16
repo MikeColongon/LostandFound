@@ -67,13 +67,15 @@ public class Userdao {
 
     public User login(String username, String password) {
 
-        String sql = "SELECT id, username, password, roles status FROM Users WHERE username =? AND password = password =?";
+
+        String sql = "SELECT id, username, password, roles, status FROM Users WHERE username = ? AND password = ?";
 
         try (Connection conn = databaseconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
              pstmt.setString(1, username);
              pstmt.setString(2, password);
+
 
 
              try (ResultSet rs = pstmt.executeQuery()) {
