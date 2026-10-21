@@ -1,9 +1,9 @@
 package com.scc;
 
 
+import com.scc.dao.DatabaseInitializer;
 import com.scc.dao.Userdao;
-import com.scc.model.User;
-import com.scc.ui.Adminmenu;
+import com.scc.ui.Authentication;
 
 import java.util.Scanner;
 
@@ -14,80 +14,16 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("\n------------------------------------------------------");
-        System.out.println("  LOST AND FOUND RECORDING AND CLAIM TRACKING SYSTEM  ");
-        System.out.println("------------------------------------------------------");
-        System.out.println("1. Log in");
-        System.out.println("2. Register");
-        System.out.println("3. Exit");
-        System.out.print("Choose an option: ");
-        String choice = sc.nextLine();
 
-        switch(choice){
-            case "1":
-                handleLogin();
-                break;
+        DatabaseInitializer.initialize();
 
-            case "2":
-                System.out.print("Enter new username: ");
-                String username = sc.nextLine();
-                System.out.print("Enter password: ");
-                String password = sc.nextLine();
-
-                System.out.print("Select role [1]-Staff | [2]-Admin: ");
-                int rolechoice = sc.nextInt();
-                    String role;
-                switch (rolechoice){
-
-                    case 1:
-                        role = "Staff";
-                        break;
-
-                    case 2:
-                        role = "Admin";
-                        break;
-
-                    default:
-                        role = null;
-                }
-
-                if (role != null){
-
-                    userdao.registerUser(username,password,role);
-
-                }else {
-                    System.out.println("Invalid role selection");
-
-                }
-
-
-                break;
-        }
-
+         Scanner scanner =  new Scanner(System.in);
+         Userdao userdao = new Userdao();
+        Authentication auth = new Authentication(userdao, scanner);
+        auth.start();
+        scanner.close();
     }
 
-    private static void handleLogin(){
 
-
-        System.out.print("Enter username: ");
-        String username = sc.nextLine();
-        System.out.print("Enter Password: ");
-        String password = sc.nextLine();
-
-         User user = userdao.login(username,password);
-
-         if(user != null){
-             System.out.println("\n -> Welcome "+user.username()+" | ROLE: "+user.roles()+"");
-
-             switch (user.roles()){
-
-                 case "ADMIN" -> new Adminmenu(userdao, sc).display(user);
-                 default -> System.out.println("Account toles not found!");
-
-             }
-
-         }
-
-    }
 
 }
