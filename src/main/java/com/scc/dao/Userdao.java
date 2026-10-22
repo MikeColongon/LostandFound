@@ -2,6 +2,8 @@
 package com.scc.dao;
 
 import com.scc.model.User;
+
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.sql.*;
 import java.util.ArrayList;
@@ -128,6 +130,64 @@ public class Userdao {
         }
         return usersList;
     }
+
+
+
+        public List<User> getPendingUser(){
+            List<User> pendingList = new ArrayList<>();
+            String sql = "SELECT * FROM Users WHERE status = 'PENDING'";
+
+                try(Connection conn = databaseconnection.getConnection()){
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(sql);
+
+                    while(rs.next()){
+                        pendingList.add(new User(
+                                rs.getInt("id"),
+                                rs.getString("username"),
+                                rs.getString("password"),
+                                rs.getString("roles"),
+                                rs.getString("status")
+
+
+                        ));
+
+
+                    }
+
+                } catch (SQLException e) {
+                    System.err.println("Error fetching user: "+e.getMessage());
+                }
+                return pendingList;
+
+    }
+
+    public boolean approveUser(int userId){
+        String sql = "UPDATE Users SET status = 'APPROVED' WHERE id = ?";
+
+        try (Connection conn = databaseconnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1,userId);
+            int rowsUpdated = pstmt.executeUpdate();
+
+            if(rowsUpdated > 0){
+                System.out.println("-> User ID: "+userId+ "approved successfully!");
+                return true;
+            }else{
+                System.out.println("-> ID not found.");
+
+
+            }
+
+        }catch (Exception e){
+            System.err.println("Error approving user: "+e.getMessage());
+        }
+        return false;
+
+
+    }
+
 
 }
 
