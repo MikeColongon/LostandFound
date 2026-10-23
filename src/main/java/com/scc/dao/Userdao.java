@@ -172,7 +172,7 @@ public class Userdao {
             int rowsUpdated = pstmt.executeUpdate();
 
             if(rowsUpdated > 0){
-                System.out.println("-> User ID: "+userId+ "approved successfully!");
+                System.out.println("-> User ID: "+userId+" approved successfully!");
                 return true;
             }else{
                 System.out.println("-> ID not found.");

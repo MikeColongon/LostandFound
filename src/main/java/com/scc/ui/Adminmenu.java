@@ -14,15 +14,9 @@ public class Adminmenu {
     public Adminmenu(Userdao userDao, Scanner scanner) {
         this.userDao = userDao;
         this.scanner = scanner;
-
-
-
-
-
-
     }
 
-    public void display (User admin) {
+    public void display(User admin) {
         boolean loggedIn = true;
         while (loggedIn) {
             System.out.println("\n--------------------------------------");
@@ -39,21 +33,25 @@ public class Adminmenu {
 
             String choice = scanner.nextLine().trim();
 
-            switch (choice){
+            switch (choice) {
                 case "1" -> viewAllUser();
                 case "2" -> viewPendingUsers();
                 case "3" -> approveUser();
-                default -> System.out.println("- [ERROR] invalid Option.");
+                case "4" -> System.out.println("-> [INFO] Add New User not yet implemented.");
+                case "5" -> System.out.println("-> [INFO] Update User not yet implemented.");
+                case "6" -> System.out.println("-> [INFO] Delete User not yet implemented.");
+                case "7" -> {
+                    loggedIn = false;
+                    System.out.println("-> Logging out...");
+                }
+                default -> System.out.println("-> [ERROR] Invalid option.");
             }
-
-
-
         }
     }
 
-    private void displayUserTable(List<User> users, String title){
-        System.out.println("--------------------------------------------" +title+ "--------------------------------------------");
-        if(users.isEmpty()){
+    private void displayUserTable(List<User> users, String title) {
+        System.out.println("\n--- " + title + " ---");
+        if (users.isEmpty()) {
             System.out.println("-> No Records Found");
             return;
         }
@@ -66,44 +64,45 @@ public class Adminmenu {
                     u.id(), u.username(), u.roles(), u.status());
         }
         System.out.println("+-----+-----------------+------------+------------+");
-
-
     }
 
-    private void viewAllUser(){
-        displayUserTable(userDao.getAllUser(), "ALL REGISTERED USER");
+    private void viewAllUser() {
+        displayUserTable(userDao.getAllUser(), "ALL REGISTERED USERS");
     }
 
-    private void viewPendingUsers(){
+    private void viewPendingUsers() {
         displayUserTable(userDao.getPendingUser(), "PENDING APPROVALS");
     }
 
-    private void approveUser(){
+    private void approveUser() {
         List<User> pendingUsers = userDao.getPendingUser();
         displayUserTable(pendingUsers, "PENDING APPROVALS");
 
-        if(pendingUsers.isEmpty()){
+        if (pendingUsers.isEmpty()) {
             return;
         }
 
         System.out.print("Enter User ID to approve (or 0 to cancel): ");
-        int userId = scanner.nextInt();
-        if(userId ==0){
-            System.out.println("-> Operation Cancelled by the user.");
-        }
-
-        boolean exits = pendingUsers.stream().anyMatch(u ->u.id() == userId);
-        if(!exits){
-            System.out.println(" -> [ERROR] User ID not found.");
+        int userId;
+        try {
+            userId = Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("-> [ERROR] Please enter a valid number.");
             return;
-
         }
+
+        if (userId == 0) {
+            System.out.println("-> Operation cancelled by the user.");
+            return;
+        }
+
+        boolean exists = pendingUsers.stream().anyMatch(u -> u.id() == userId);
+        if (!exists) {
+            System.out.println("-> [ERROR] User ID not found in pending list.");
+            return;
+        }
+
         userDao.approveUser(userId);
-
-
+        System.out.println("-> [SUCCESS] User successfully approved.");
     }
-
-
-
-
 }
