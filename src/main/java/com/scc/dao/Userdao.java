@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class Userdao {
 
@@ -76,12 +77,12 @@ public class Userdao {
         try (Connection conn = databaseconnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-             pstmt.setString(1, username);
-             pstmt.setString(2, password);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
 
 
 
-             try (ResultSet rs = pstmt.executeQuery()) {
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     String status = rs.getString("status");
                     if ("PENDING".equalsIgnoreCase(status)) {
@@ -100,7 +101,7 @@ public class Userdao {
                     System.out.println("-> Invalid username or password");
                 }
             }
-            } catch (SQLException e) {
+        } catch (SQLException e) {
             System.err.println("Error during login:  " + e.getMessage());
         }return null;
 
@@ -133,32 +134,32 @@ public class Userdao {
 
 
 
-        public List<User> getPendingUser(){
-            List<User> pendingList = new ArrayList<>();
-            String sql = "SELECT * FROM Users WHERE status = 'PENDING'";
+    public List<User> getPendingUser(){
+        List<User> pendingList = new ArrayList<>();
+        String sql = "SELECT * FROM Users WHERE status = 'PENDING'";
 
-                try(Connection conn = databaseconnection.getConnection()){
-                    Statement stmt = conn.createStatement();
-                    ResultSet rs = stmt.executeQuery(sql);
+        try(Connection conn = databaseconnection.getConnection()){
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
 
-                    while(rs.next()){
-                        pendingList.add(new User(
-                                rs.getInt("id"),
-                                rs.getString("username"),
-                                rs.getString("password"),
-                                rs.getString("roles"),
-                                rs.getString("status")
-
-
-                        ));
+            while(rs.next()){
+                pendingList.add(new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("roles"),
+                        rs.getString("status")
 
 
-                    }
+                ));
 
-                } catch (SQLException e) {
-                    System.err.println("Error fetching user: "+e.getMessage());
-                }
-                return pendingList;
+
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching user: "+e.getMessage());
+        }
+        return pendingList;
 
     }
 
@@ -166,7 +167,7 @@ public class Userdao {
         String sql = "UPDATE Users SET status = 'APPROVED' WHERE id = ?";
 
         try (Connection conn = databaseconnection.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setInt(1,userId);
             int rowsUpdated = pstmt.executeUpdate();
@@ -185,6 +186,36 @@ public class Userdao {
         }
         return false;
 
+
+    }
+
+
+    public boolean updateUserAndStatus(int userId, String newRoles, String newStatus){
+
+        String sql = "UPDATE Users SET roles = ?, status = ? WHERE id = ?";
+
+        try(
+                Connection conn  = databaseconnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, newRoles.toUpperCase(Locale.ROOT));
+            pstmt.setString(2, newStatus.toUpperCase(Locale.ROOT));
+            pstmt.setInt(3, userId);
+
+            int rowsUpdated = pstmt.executeUpdate();
+            if (rowsUpdated > 0){
+                System.out.println("-> User ID: "+userId+ "updated successfully!");
+                return true;
+
+            }else{
+                System.out.println("-> User Id not found.");
+                return false;
+            }
+
+        }catch (SQLException e){
+            System.err.println("Error updating user: "+e.getMessage());
+        }
+        return false;
 
     }
 

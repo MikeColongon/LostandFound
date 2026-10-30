@@ -17,8 +17,8 @@ public class Main {
 
         DatabaseInitializer.initialize();
 
-         Scanner scanner =  new Scanner(System.in);
-         Userdao userdao = new Userdao();
+        Scanner scanner =  new Scanner(System.in);
+        Userdao userdao = new Userdao();
         Authentication auth = new Authentication(userdao, scanner);
         auth.start();
         scanner.close();
