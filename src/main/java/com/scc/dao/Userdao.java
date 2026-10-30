@@ -204,7 +204,7 @@ public class Userdao {
 
             int rowsUpdated = pstmt.executeUpdate();
             if (rowsUpdated > 0){
-                System.out.println("-> User ID: "+userId+ "updated successfully!");
+                System.out.println("-> User ID: " +userId+ "updated successfully!");
                 return true;
 
             }else{
