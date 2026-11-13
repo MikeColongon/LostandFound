@@ -19,6 +19,18 @@ public class DatabaseInitializer {
                 + "FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE"
                 + ");";
 
+        String createItemsTableSql = "CREATE TABLE IF NOT EXISTS items ("
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "item_name TEXT NOT NULL, "
+                + "category TEXT NOT NULL, "
+                + "description TEXT NOT NULL, "
+                + "location TEXT NOT NULL, "
+                + "status TEXT NOT NULL DEFAULT 'UNCLAIMED', "
+                + "reported_by INTEGER NOT NULL, "
+                + "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, "
+                + "FOREIGN KEY (reported_by) REFERENCES Users(id) ON DELETE CASCADE"
+                + ");";
+
         try (Connection conn = databaseconnection.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(createTableSql);

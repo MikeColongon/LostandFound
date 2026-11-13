@@ -290,7 +290,7 @@ public class Userdao {
             System.err.println("Error deleting user: " + e.getMessage());
         }
 
-        // Log the account management action after connection is closed
+
         if (deleted) {
             activityLogDao.logAction(userId, "Admin", "Account Management",
                     "Admin deleted User [ID: " + userId + "]");
